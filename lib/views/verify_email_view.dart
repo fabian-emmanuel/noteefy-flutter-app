@@ -27,7 +27,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           TextButton(
             onPressed: () {
               Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/login/', (_) => false);
+                  .pushNamedAndRemoveUntil('/login/', (route) => false);
             },
             child: const Text('Already Verified? Login Here'),
           )
