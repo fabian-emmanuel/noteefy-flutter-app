@@ -67,7 +67,9 @@ class _LoginViewState extends State<LoginView> {
                     await showErrorDialog(context, 'User Not Found!');
                   } else if (e.code == 'wrong-password') {
                     await showErrorDialog(context, 'Wrong Credentials!');
-                  } else {
+                  } else if (e.code == 'invalid-email') {
+                    await showErrorDialog(context, 'Invalid Email! Please Enter a valid Email');
+                  }else {
                     await showErrorDialog(context, 'Error: ${e.code}');
                   }
                 } catch (e) {
