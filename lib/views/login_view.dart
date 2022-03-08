@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:noteefy/constants/routes.dart' show notesRoute, registerRoute;
+import 'package:noteefy/constants/routes.dart' show notesRoute, registerRoute, verifyEmailRoute;
 import 'package:noteefy/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -57,11 +57,17 @@ class _LoginViewState extends State<LoginView> {
                 final email = _email.text;
                 final password = _password.text;
                 try {
-                  final userCredentials = await FirebaseAuth.instance
+                  await FirebaseAuth.instance
                       .signInWithEmailAndPassword(
-                          email: email, password: password);
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil(notesRoute, (_) => false);
+                          email: email, password: password,);
+                  final user = FirebaseAuth.instance.currentUser;
+                  if(user?.emailVerified ?? false){
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil(notesRoute, (_) => false);
+                  } else {
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil(verifyEmailRoute, (_) => false);
+                  }
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'user-not-found') {
                     await showErrorDialog(context, 'User Not Found!');
