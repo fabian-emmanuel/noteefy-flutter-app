@@ -1,6 +1,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:noteefy/services/auth/auth_exceptions.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:noteefy/firebase_options.dart';
+import 'package:noteefy/exceptions/auth_exceptions.dart';
 import 'package:noteefy/services/auth/auth_provider.dart';
 import 'package:noteefy/services/auth/auth_user.dart';
 
@@ -53,7 +55,7 @@ class FirebaseAuthProvider implements AuthProvider{
      } catch (_) {
        throw GenericAuthException();
       }
-  } 
+  }
 
   @override
   Future<void> logOut() async {
@@ -65,6 +67,12 @@ class FirebaseAuthProvider implements AuthProvider{
   Future<void> sendVerificationEmail() async {
     final user = FirebaseAuth.instance.currentUser;
     (user != null) ? await user.sendEmailVerification() : throw UserNotLoggedInAuthException();
+  }
+
+  @override
+  Future<void> initialize() async{
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
   }
 
 }

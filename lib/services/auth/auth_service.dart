@@ -1,10 +1,13 @@
 import 'package:noteefy/services/auth/auth_provider.dart';
 import 'package:noteefy/services/auth/auth_user.dart';
+import 'package:noteefy/services/auth/firebase/firebase_auth_provider.dart';
 
 class AuthService implements AuthProvider{
   final AuthProvider provider;
 
   AuthService(this.provider);
+
+  factory AuthService.firebase() => AuthService(FirebaseAuthProvider());
 
   @override
   Future<AuthUser> createUser({required String email, required String password}) => provider.createUser(email: email, password: password);
@@ -20,5 +23,8 @@ class AuthService implements AuthProvider{
 
   @override
   Future<void> sendVerificationEmail() => provider.sendVerificationEmail();
+
+  @override
+  Future<void> initialize() => provider.initialize(); 
 
 }
