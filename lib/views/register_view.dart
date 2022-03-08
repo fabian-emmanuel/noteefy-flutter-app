@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:noteefy/constants/routes.dart';
+import 'package:noteefy/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -64,12 +65,14 @@ class _RegisterViewState extends State<RegisterView> {
                 devtools.log(userCredentials.toString());
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'weak-password') {
-                  devtools.log('Your password is weak');
+                  await showErrorDialog(context, 'Your password is Weak!');
                 } else if (e.code == 'email-already-in-use') {
-                  devtools.log('Email already in use!');
+                  await showErrorDialog(context, 'Email already in use!');
                 } else if (e.code == 'invalid-email') {
-                  devtools.log('Email is invalid!');
+                  await showErrorDialog(context, 'Email is invalid! Please Enter a valid Email');
                 }
+              } catch (e){
+                await showErrorDialog(context, e.toString());
               }
             },
             child: const Text('Register'),
