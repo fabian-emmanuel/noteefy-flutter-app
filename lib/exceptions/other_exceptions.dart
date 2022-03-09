@@ -1,0 +1,1 @@
+class NotInitializedException implements Exception{}
