@@ -1,6 +1,7 @@
 import 'package:noteefy/constants/db_constants.dart';
 import 'package:noteefy/constants/db_query_constants.dart';
 import 'package:noteefy/exceptions/db_exceptions.dart';
+import 'package:noteefy/services/crud/notes_service.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -23,6 +24,7 @@ class DatabaseConfig{
       _db = db;
       await db.execute(createUserTable);
       await db.execute(createNotesTable);
+      await NoteService().cacheNotes();
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentDirectoryException();
     }

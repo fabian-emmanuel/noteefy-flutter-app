@@ -6,6 +6,22 @@ import 'package:sqflite/sqflite.dart';
 
 class UserService {
   Database? _db;
+
+  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+    try {
+      final user = await getUser(email: email);
+      return user;
+    } on CouldNotFindUserException {
+      final createdUser = await createUser(email: email);
+      return createdUser;
+    } catch (e) {
+      rethrow;
+    }
+
+
+}
+
+
   Future<void> deleteUser({required String email}) async {
     final db = DatabaseConfig().getDatabaseOrThrow(_db);
     final count = await db
