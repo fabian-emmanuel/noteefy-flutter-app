@@ -75,13 +75,11 @@ class NoteService {
   //Note crud
 
   Future<DatabaseNote> createNote(
-      {required DatabaseUser user, required String text}) async {
+      {required DatabaseUser user}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    final dbUser = await getUser(email: user.email);
-    final noteId = (dbUser != user)
-        ? throw CouldNotFindUserException()
-        : await db.insert(noteTable,
+    const text = '';
+    final noteId = await db.insert(noteTable,
             {userIdCol: user.id, textCol: text, isSyncedWithCloudCol: 1});
     final note = DatabaseNote(
         id: noteId, userId: user.id, text: text, isSyncedWithCloud: true);
@@ -91,21 +89,17 @@ class NoteService {
   }
 
   Future<DatabaseNote> updateNote(
-      {required DatabaseUser user,
-      required int id,
+      {required DatabaseNote note,
       required String text}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    final dbUser = await getUser(email: user.email);
-    final note = await getNote(id: id);
-    final count = (dbUser.id != note.userId)
-        ? throw PermissionDeniedException()
-        : await db.update(noteTable, {textCol: text, isSyncedWithCloudCol: 0});
+    await getNote(id: note.id);
+    final count = await db.update(noteTable, {textCol: text, isSyncedWithCloudCol: 0});
     if (count < 1) {
       throw CouldNotUpdateNoteException();
     } else {
-      final note = await getNote(id: id);
-      _notes.removeWhere((note) => note.id == id);
+      final updatedNote = await getNote(id: note.id);
+      _notes.removeWhere((note) => note.id == note.id);
       _notes.add(note);
       _notesStreamController.add(_notes);
       return note;
