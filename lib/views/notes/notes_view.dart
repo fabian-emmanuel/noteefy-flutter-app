@@ -3,7 +3,7 @@ import 'package:noteefy/constants/routes.dart';
 import 'package:noteefy/enums/menu_action.dart';
 import 'package:noteefy/models/db_notes.dart';
 import 'package:noteefy/services/auth/auth_service.dart';
-import 'package:noteefy/services/crud/notes_service.dart';
+import 'package:noteefy/services/local/notes_service.dart';
 import 'package:noteefy/utilities/dialogs/logout_dialog.dart';
 import 'package:noteefy/views/notes/notes_list_view.dart';
 
@@ -16,7 +16,7 @@ class NotesView extends StatefulWidget {
 
 class _NotesViewState extends State<NotesView> {
   late final NoteService _noteService;
-  String get userEmail => AuthService.firebase().currentUser!.email!;
+  String get userEmail => AuthService.firebase().currentUser!.email;
 
   @override
   void initState() {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:noteefy/models/db_notes.dart';
 import 'package:noteefy/services/auth/auth_service.dart';
-import 'package:noteefy/services/crud/notes_service.dart';
+import 'package:noteefy/services/local/notes_service.dart';
 import 'package:noteefy/utilities/generics/get_arguments.dart';
 
 class CreateUpdateNoteView extends StatefulWidget {
@@ -51,7 +51,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
       return existingNote;
     }
     final currentUser = AuthService.firebase().currentUser!;
-    final email = currentUser.email!;
+    final email = currentUser.email;
     final owner = await _noteService.getUser(email: email);
     final newNote = await _noteService.createNote(user: owner);
     _note = newNote;
