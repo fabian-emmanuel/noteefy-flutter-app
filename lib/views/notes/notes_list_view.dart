@@ -3,13 +3,14 @@ import 'package:noteefy/models/db_notes.dart';
 import 'package:noteefy/utilities/dialogs/delete_dialog.dart';
 
 
-typedef DeleteNoteCallback = void Function(DatabaseNote note);
+typedef NoteCallback = void Function(DatabaseNote note);
 
 class NotesListView extends StatelessWidget {
-  const  NotesListView({Key? key, required this.notes, required this.onDeleteNote}) : super(key: key);
-
   final List<DatabaseNote> notes;
-  final DeleteNoteCallback onDeleteNote;
+  final NoteCallback onDeleteNote;
+  final NoteCallback onTapNote;
+
+  const  NotesListView({Key? key, required this.notes, required this.onDeleteNote, required this.onTapNote}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +19,9 @@ class NotesListView extends StatelessWidget {
       itemBuilder: (context, index) {
         final note = notes[index];
         return ListTile(
+          onTap: () {
+            onTapNote(note);
+          },
           title: Text(
             note.text,
             maxLines: 1,

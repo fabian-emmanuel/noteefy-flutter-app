@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:noteefy/constants/routes.dart';
 import 'package:noteefy/views/home_page.dart';
 import 'package:noteefy/views/login_view.dart';
-import 'package:noteefy/views/notes/new_note_view.dart';
+import 'package:noteefy/views/notes/create_update_note_view.dart';
 import 'package:noteefy/views/notes/notes_view.dart';
 import 'package:noteefy/views/register_view.dart';
 import 'package:noteefy/views/verify_email_view.dart';
@@ -24,7 +24,7 @@ void main() {
       homeRoute: (context) => const HomePage(),
       verifyEmailRoute: (context) => const VerifyEmailView(),
       notesRoute: (context) => const NotesView(),
-      addNoteRoute: (context) => const AddNoteView()
+      createOrUpdateNoteRoute: (context) => const CreateUpdateNoteView()
     },
   ));
 }

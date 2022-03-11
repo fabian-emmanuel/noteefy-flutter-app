@@ -1,4 +1,4 @@
-const dbName = 'noteefy.db';
+const dbName = 'notes.db';
 const userTable = 'user';
 const noteTable = 'note';
 const idCol = 'id';
