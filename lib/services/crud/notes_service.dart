@@ -5,7 +5,7 @@ import 'package:noteefy/constants/db_query_constants.dart';
 import 'package:noteefy/exceptions/db_exceptions.dart';
 import 'package:noteefy/models/db_notes.dart';
 import 'package:noteefy/models/db_user.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -15,11 +15,18 @@ class NoteService {
   List<DatabaseNote> _notes = [];
 
   static final NoteService _shared = NoteService._sharedInstance();
-  NoteService._sharedInstance();
+
+  NoteService._sharedInstance(){
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamController.sink.add(_notes);
+      }
+    );
+  }
+
   factory NoteService() => _shared;
 
-  final _notesStreamController =
-  StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
   Future<void> _cacheNotes() async {
     final allNotes = await getAllNotes();
@@ -65,11 +72,6 @@ class NoteService {
     }
   }
 
-
-
-
-
-
   Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
   //Note crud
@@ -78,6 +80,10 @@ class NoteService {
       {required DatabaseUser user}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
+    final dbUser = await getUser(email: user.email);
+    if(dbUser != user){
+      throw CouldNotFindUserException();
+    }
     const text = '';
     final noteId = await db.insert(noteTable,
             {userIdCol: user.id, textCol: text, isSyncedWithCloudCol: 1});
@@ -99,10 +105,10 @@ class NoteService {
       throw CouldNotUpdateNoteException();
     } else {
       final updatedNote = await getNote(id: note.id);
-      _notes.removeWhere((note) => note.id == note.id);
-      _notes.add(note);
+      _notes.removeWhere((note) => note.id == updatedNote.id);
+      _notes.add(updatedNote);
       _notesStreamController.add(_notes);
-      return note;
+      return updatedNote;
     }
   }
 
@@ -126,9 +132,7 @@ class NoteService {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final notes = await db.query(noteTable);
-    return (notes.isEmpty)
-        ? throw CouldNotFindNoteException()
-        : notes.map((note) => DatabaseNote.fromRow(note));
+    return notes.map((noteRow) => DatabaseNote.fromRow(noteRow));
   }
 
   Future<void> deleteNote({required int id}) async {
