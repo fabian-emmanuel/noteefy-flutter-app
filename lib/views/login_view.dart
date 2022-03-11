@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:noteefy/constants/routes.dart' show notesRoute, registerRoute, verifyEmailRoute;
 import 'package:noteefy/exceptions/auth_exceptions.dart';
 import 'package:noteefy/services/auth/auth_service.dart';
-import 'package:noteefy/utilities/show_error_dialog.dart';
+import 'package:noteefy/utilities/dialogs/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
