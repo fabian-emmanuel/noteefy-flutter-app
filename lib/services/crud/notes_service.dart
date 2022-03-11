@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:noteefy/constants/db_constants.dart';
 import 'package:noteefy/constants/db_query_constants.dart';
 import 'package:noteefy/exceptions/db_exceptions.dart';
+import 'package:noteefy/extensions/list/filter.dart';
 import 'package:noteefy/models/db_notes.dart';
 import 'package:noteefy/models/db_user.dart';
 import 'package:path/path.dart' show join;
@@ -11,17 +12,16 @@ import 'package:sqflite/sqflite.dart';
 
 class NoteService {
   Database? _db;
-
+  DatabaseUser? _user;
   List<DatabaseNote> _notes = [];
 
   static final NoteService _shared = NoteService._sharedInstance();
 
-  NoteService._sharedInstance(){
-    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
-      onListen: () {
-        _notesStreamController.sink.add(_notes);
-      }
-    );
+  NoteService._sharedInstance() {
+    _notesStreamController =
+        StreamController<List<DatabaseNote>>.broadcast(onListen: () {
+      _notesStreamController.sink.add(_notes);
+    });
   }
 
   factory NoteService() => _shared;
@@ -72,21 +72,27 @@ class NoteService {
     }
   }
 
-  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
+  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream.filter((note){
+    final currentUser = _user;
+    if(currentUser != null){
+      return note.userId == currentUser.id;
+    } else {
+      throw UserShouldBeSetBeforeReadingAllNotesException();
+    }
+  });
 
   //Note crud
 
-  Future<DatabaseNote> createNote(
-      {required DatabaseUser user}) async {
+  Future<DatabaseNote> createNote({required DatabaseUser user}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final dbUser = await getUser(email: user.email);
-    if(dbUser != user){
+    if (dbUser != user) {
       throw CouldNotFindUserException();
     }
     const text = '';
     final noteId = await db.insert(noteTable,
-            {userIdCol: user.id, textCol: text, isSyncedWithCloudCol: 1});
+        {userIdCol: user.id, textCol: text, isSyncedWithCloudCol: 1});
     final note = DatabaseNote(
         id: noteId, userId: user.id, text: text, isSyncedWithCloud: true);
     _notes.add(note);
@@ -95,12 +101,13 @@ class NoteService {
   }
 
   Future<DatabaseNote> updateNote(
-      {required DatabaseNote note,
-      required String text}) async {
+      {required DatabaseNote note, required String text}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     await getNote(id: note.id);
-    final count = await db.update(noteTable, {textCol: text, isSyncedWithCloudCol: 0});
+    final count = await db.update(
+        noteTable, {textCol: text, isSyncedWithCloudCol: 0},
+        where: 'id = ?', whereArgs: [note.id]);
     if (count < 1) {
       throw CouldNotUpdateNoteException();
     } else {
@@ -159,12 +166,18 @@ class NoteService {
 
   // User Crud
 
-  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+  Future<DatabaseUser> getOrCreateUser({required String email, bool setAsCurrentUser = true}) async {
     try {
       final user = await getUser(email: email);
+      if(setAsCurrentUser){
+        _user = user;
+      }
       return user;
     } on CouldNotFindUserException {
       final createdUser = await createUser(email: email);
+      if(setAsCurrentUser){
+        _user = createdUser;
+      }
       return createdUser;
     } catch (e) {
       rethrow;
