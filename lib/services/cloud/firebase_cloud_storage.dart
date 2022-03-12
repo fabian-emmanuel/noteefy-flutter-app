@@ -3,9 +3,9 @@ import 'package:noteefy/constants/cloud_storage_constants.dart';
 import 'package:noteefy/exceptions/cloud_storage_exceptions.dart';
 import 'package:noteefy/models/cloud_note.dart';
 
-class FirebaseCloudStorage{
-
-  static final FirebaseCloudStorage _shared = FirebaseCloudStorage._sharedInstance();
+class FirebaseCloudStorage {
+  static final FirebaseCloudStorage _shared =
+      FirebaseCloudStorage._sharedInstance();
   FirebaseCloudStorage._sharedInstance();
   factory FirebaseCloudStorage() => _shared;
 
@@ -32,7 +32,22 @@ class FirebaseCloudStorage{
     return allNotes;
   }
 
-  Future<void> updateNote({required String documentId, required String text,}) async {
+  Future<Iterable<CloudNote>> getNotes({required String ownerUserId}) async {
+    try {
+      return await notes
+          .where(ownerUserIdFieldName, isEqualTo: ownerUserId)
+          .get()
+          .then(
+              (value) => value.docs.map((doc) => CloudNote.fromSnapshot(doc)));
+    } catch (e) {
+      throw CouldNotGetAllNotesException();
+    }
+  }
+
+  Future<void> updateNote({
+    required String documentId,
+    required String text,
+  }) async {
     try {
       await notes.doc(documentId).update({textFieldName: text});
     } catch (e) {
