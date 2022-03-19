@@ -5,7 +5,6 @@ import 'package:noteefy/services/auth/bloc/auth_bloc.dart';
 import 'package:noteefy/services/auth/bloc/auth_event.dart';
 import 'package:noteefy/services/auth/bloc/auth_state.dart';
 import 'package:noteefy/utilities/dialogs/error_dialog.dart';
-import 'package:noteefy/utilities/dialogs/loading_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -38,7 +37,7 @@ class _LoginViewState extends State<LoginView> {
       listener: (context, state) async {
         if (state is AuthStateLoggedOut) {
           if (state.exception is UserNotFoundAuthException) {
-            await showErrorDialog(context, 'User not found!');
+            await showErrorDialog(context, 'Cannot find user with the above credentials!');
           } else if (state.exception is WrongPasswordAuthException) {
             await showErrorDialog(context, 'Wrong Credentials!');
           } else if (state.exception is GenericAuthException) {
@@ -50,40 +49,51 @@ class _LoginViewState extends State<LoginView> {
         appBar: AppBar(
           title: const Text('Login'),
         ),
-        body: Column(
-          children: [
-            TextField(
-              enableSuggestions: false,
-              autocorrect: false,
-              keyboardType: TextInputType.emailAddress,
-              controller: _email,
-              decoration: const InputDecoration(hintText: 'Enter Your Email'),
-            ),
-            TextField(
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              controller: _password,
-              decoration: const InputDecoration(
-                hintText: 'Enter Your Password',
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                enableSuggestions: false,
+                autocorrect: false,
+                keyboardType: TextInputType.emailAddress,
+                controller: _email,
+                decoration: const InputDecoration(hintText: 'Enter Your Email'),
               ),
-            ),
-            TextButton(
-                onPressed: () async {
-                  final email = _email.text;
-                  final password = _password.text;
-                  context.read<AuthBloc>().add(AuthEventLogIn(email, password));
+              TextField(
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
+                controller: _password,
+                decoration: const InputDecoration(
+                  hintText: 'Enter Your Password',
+                ),
+              ),
+              TextButton(
+                  onPressed: () async {
+                    final email = _email.text;
+                    final password = _password.text;
+                    context.read<AuthBloc>().add(AuthEventLogIn(email, password));
+                  },
+                  child: const Text('Login')),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(
+                        const AuthEventForgotPassword(),
+                      );
                 },
-                child: const Text('Login')),
-            TextButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(
-                      const AuthEventShouldRegister(),
-                    );
-              },
-              child: const Text('Not Registered? Register Here'),
-            )
-          ],
+                child: const Text('Forgot Password?'),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(
+                        const AuthEventShouldRegister(),
+                      );
+                },
+                child: const Text('Not Registered? Register Here'),
+              ),
+            ],
+          ),
         ),
       ),
     );
