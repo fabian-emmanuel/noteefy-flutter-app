@@ -71,8 +71,7 @@ class MockAuthProvider implements AuthProvider{
     return logIn(email: email, password: password);
   }
 
-  @override
-  // TODO: implement currentUser
+  @override 
   AuthUser? get currentUser => _user;
 
   @override

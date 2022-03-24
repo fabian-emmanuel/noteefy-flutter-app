@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:noteefy/constants/routes.dart';
 import 'package:noteefy/exceptions/auth_exceptions.dart';
-import 'package:noteefy/services/auth/auth_service.dart';
 import 'package:noteefy/services/auth/bloc/auth_bloc.dart';
 import 'package:noteefy/services/auth/bloc/auth_event.dart';
 import 'package:noteefy/services/auth/bloc/auth_state.dart';
