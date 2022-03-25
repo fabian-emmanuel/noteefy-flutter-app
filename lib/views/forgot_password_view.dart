@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:noteefy/services/auth/bloc/auth_bloc.dart';
 import 'package:noteefy/services/auth/bloc/auth_event.dart';
 import 'package:noteefy/services/auth/bloc/auth_state.dart';
@@ -15,11 +16,24 @@ class ForgotPasswordView extends StatefulWidget {
 
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   late final TextEditingController _controller;
+  BannerAd? _bannerAd;
 
   @override
   void initState() {
     _controller = TextEditingController();
     super.initState();
+    loadBannerAd();
+  }
+
+  void loadBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId: "ca-app-pub-3604554235003397/1591009575",
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: const BannerAdListener(),
+    );
+
+    _bannerAd?.load();
   }
 
   @override
@@ -48,34 +62,42 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              const Text(
-                  'Provide your email below to get the password reset link'),
-              TextField(
-                keyboardType: TextInputType.emailAddress,
-                autocorrect: false,
-                autofocus: true,
-                controller: _controller,
-                decoration:
-                    const InputDecoration(hintText: 'Enter Email Address'),
-              ),
-              TextButton(
-                onPressed: () {
-                  final email = _controller.text;
-                  context
-                      .read<AuthBloc>()
-                      .add(AuthEventForgotPassword(email: email));
-                },
-                child: const Text('Send Password Reset Link'),
-              ),
-              TextButton(
-                onPressed: () {
-                  context.read<AuthBloc>().add(const AuthEventLogout());
-                },
-                child: const Text('Back to Login'),
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const Text(
+                    'Provide your email below to get the password reset link'),
+                TextField(
+                  keyboardType: TextInputType.emailAddress,
+                  autocorrect: false,
+                  autofocus: true,
+                  controller: _controller,
+                  decoration:
+                      const InputDecoration(hintText: 'Enter Email Address'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    final email = _controller.text;
+                    context
+                        .read<AuthBloc>()
+                        .add(AuthEventForgotPassword(email: email));
+                  },
+                  child: const Text('Send Password Reset Link'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    context.read<AuthBloc>().add(const AuthEventLogout());
+                  },
+                  child: const Text('Back to Login'),
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  child: AdWidget(ad: _bannerAd!),
+                  width: _bannerAd?.size.width.toDouble(),
+                  height: _bannerAd?.size.height.toDouble(),
+                ),
+              ],
+            ),
           ),
         ),
       ),
