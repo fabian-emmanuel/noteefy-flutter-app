@@ -6,24 +6,24 @@ import 'package:noteefy/services/auth/bloc/auth_bloc.dart';
 import 'package:noteefy/services/auth/firebase/firebase_auth_provider.dart';
 import 'package:noteefy/views/home_page.dart';
 import 'package:noteefy/views/notes/create_update_note_view.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
   runApp(MaterialApp(
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     title: 'Noteefy',
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
       primarySwatch: Colors.blue,
     ),
     home: BlocProvider<AuthBloc>(
-      create: (context) => AuthBloc(FirebaseAuthProvider()),
+        create: (context) => AuthBloc(FirebaseAuthProvider()),
         child: const HomePage()),
     routes: {
       createOrUpdateNoteRoute: (context) => const CreateUpdateNoteView()
     },
   ));
 }
-
-

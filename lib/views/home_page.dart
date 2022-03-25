@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:noteefy/extensions/buildcontext/loc.dart';
 import 'package:noteefy/helpers/loading/loading_screen.dart';
 import 'package:noteefy/services/auth/bloc/auth_bloc.dart';
 import 'package:noteefy/services/auth/bloc/auth_event.dart';
@@ -20,7 +21,7 @@ class HomePage extends StatelessWidget {
       if (state.isLoading) {
         LoadingScreen().show(
           context: context,
-          text: state.loadingText ?? 'Please wait a moment...!',
+          text: state.loadingText ?? context.loc.loading,
         );
       } else {
         LoadingScreen().hide();

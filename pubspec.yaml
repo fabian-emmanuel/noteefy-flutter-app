@@ -29,6 +29,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   firebase_auth:
   firebase_core:
 
@@ -46,6 +48,7 @@ dependencies:
   equatable: ^2.0.3
   flutter_launcher_icons: ^0.9.2
   google_mobile_ads: ^1.1.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +67,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icon in

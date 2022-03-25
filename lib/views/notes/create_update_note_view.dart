@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noteefy/extensions/buildcontext/loc.dart';
 import 'package:noteefy/models/cloud_note.dart';
 import 'package:noteefy/services/auth/auth_service.dart';
 import 'package:noteefy/services/cloud/firebase_cloud_storage.dart';
@@ -84,7 +85,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Note'),
+        title: Text(context.loc.note),
         actions: [
           IconButton(
             onPressed: () async {
@@ -105,11 +106,14 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
           switch(snapshot.connectionState){
             case ConnectionState.done:
               _setupTextControllerListener();
-              return TextField(
-                controller: _textController,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                decoration: const InputDecoration(hintText: 'Start typing here...'),
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  controller: _textController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  decoration: InputDecoration(hintText: context.loc.start_typing_your_note),
+                ),
               );
             default:
               return const CircularProgressIndicator();

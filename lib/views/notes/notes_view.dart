@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:noteefy/constants/routes.dart';
 import 'package:noteefy/enums/menu_action.dart';
+import 'package:noteefy/extensions/buildcontext/loc.dart';
 import 'package:noteefy/models/cloud_note.dart';
 import 'package:noteefy/services/auth/auth_service.dart';
 import 'package:noteefy/services/auth/bloc/auth_bloc.dart';
@@ -9,6 +10,10 @@ import 'package:noteefy/services/auth/bloc/auth_event.dart';
 import 'package:noteefy/services/cloud/firebase_cloud_storage.dart';
 import 'package:noteefy/utilities/dialogs/logout_dialog.dart';
 import 'package:noteefy/views/notes/notes_list_view.dart';
+
+extension Count<T extends Iterable> on Stream<T> {
+  Stream<int> get getLength => map((event) => event.length);
+}
 
 class NotesView extends StatefulWidget {
   const NotesView({Key? key}) : super(key: key);
@@ -31,7 +36,17 @@ class _NotesViewState extends State<NotesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notes'),
+        title: StreamBuilder<int>(
+          stream: _noteService.allNotes(ownerUserId: userId).getLength,
+          builder: (context, snapshot) {
+            if(snapshot.hasData){
+              final noteCount = snapshot.data ?? 0;
+              return Text(context.loc.notes_title(noteCount));
+            } else {
+              return const Text('');
+            }
+          }
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -50,10 +65,10 @@ class _NotesViewState extends State<NotesView> {
               }
             },
             itemBuilder: (context) {
-              return const [
+              return [
                 PopupMenuItem<MenuAction>(
                   value: MenuAction.logout,
-                  child: Text('Logout'),
+                  child: Text(context.loc.logout_button),
                 )
               ];
             },

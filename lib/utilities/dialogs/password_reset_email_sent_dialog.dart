@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:noteefy/extensions/buildcontext/loc.dart';
 import 'package:noteefy/utilities/dialogs/generic_dialog.dart';
 
 Future<void> showPasswordResetSentDialog(BuildContext context) {
   return showGenericDialog<void>(
     context: context,
-    title: 'Password Reset',
-    content: 'password reset sent! Please check your email!',
+    title: context.loc.password_reset,
+    content: context.loc.password_reset_dialog_prompt,
     optionsBuilder: () => {
-      'ok': null,
+      context.loc.ok: null,
     },
   );
 }

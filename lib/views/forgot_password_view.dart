@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:noteefy/constants/ads_constants.dart';
+import 'package:noteefy/extensions/buildcontext/loc.dart';
 import 'package:noteefy/services/auth/bloc/auth_bloc.dart';
 import 'package:noteefy/services/auth/bloc/auth_event.dart';
 import 'package:noteefy/services/auth/bloc/auth_state.dart';
@@ -27,7 +29,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
   void loadBannerAd() {
     _bannerAd = BannerAd(
-      adUnitId: "ca-app-pub-3604554235003397/1591009575",
+      adUnitId: bannerAdUnitId,
       size: AdSize.banner,
       request: const AdRequest(),
       listener: const BannerAdListener(),
@@ -52,28 +54,28 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             await showPasswordResetSentDialog(context);
           }
           if (state.exception != null) {
-            await showErrorDialog(context, 'Request could not be processed!');
+            await showErrorDialog(
+                context, context.loc.forgot_password_view_generic_error);
           }
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Forgot Password'),
+          title: Text(context.loc.forgot_password),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const Text(
-                    'Provide your email below to get the password reset link'),
+                Text(context.loc.forgot_password_view_prompt),
                 TextField(
                   keyboardType: TextInputType.emailAddress,
                   autocorrect: false,
                   autofocus: true,
                   controller: _controller,
-                  decoration:
-                      const InputDecoration(hintText: 'Enter Email Address'),
+                  decoration: InputDecoration(
+                      hintText: context.loc.email_text_field_placeholder),
                 ),
                 TextButton(
                   onPressed: () {
@@ -82,13 +84,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                         .read<AuthBloc>()
                         .add(AuthEventForgotPassword(email: email));
                   },
-                  child: const Text('Send Password Reset Link'),
+                  child: Text(context.loc.forgot_password_view_send_me_link),
                 ),
                 TextButton(
                   onPressed: () {
                     context.read<AuthBloc>().add(const AuthEventLogout());
                   },
-                  child: const Text('Back to Login'),
+                  child: Text(context.loc.forgot_password_view_back_to_login),
                 ),
                 Container(
                   alignment: Alignment.center,
